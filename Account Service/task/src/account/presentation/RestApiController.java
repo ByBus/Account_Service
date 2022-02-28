@@ -1,6 +1,10 @@
 package account.presentation;
 
 import account.buiseness.Mapper;
+import account.buiseness.PasswordBreachedChecker;
+import account.exception.BadRequestException;
+import account.model.NewPasswordDTO;
+import account.model.PasswordChangedDTO;
 import account.model.UserDTO;
 import account.model.UserEntity;
 import account.repository.RepositoryService;
@@ -17,7 +21,6 @@ import javax.validation.Valid;
 
 @RestController
 public class RestApiController {
-
     private final RepositoryService repository;
     private final Mapper<UserDTO, UserEntity> userMapper;
     private final PasswordEncoder encoder;
@@ -32,16 +35,32 @@ public class RestApiController {
     }
 
     @PostMapping("/api/auth/signup")
-    public UserDTO getResponse(@Valid @RequestBody UserDTO user) {
-        UserEntity userEntity = userMapper.mapToEntity(user);
-        userEntity.setPassword(encoder.encode(userEntity.getPassword()));
-        UserEntity newUser = repository.save(userEntity);
-        return userMapper.mapToDTO(newUser);
+    public UserDTO getResponse(@Valid @RequestBody UserDTO userDTO) {
+        String password = userDTO.getPassword();
+        new PasswordBreachedChecker().check(password);
+        UserEntity userEntity = userMapper.mapToEntity(userDTO);
+        userEntity.setPassword(encoder.encode(password));
+        userEntity = repository.create(userEntity);
+        return userMapper.mapToDTO(userEntity);
     }
 
     @GetMapping("/api/empl/payment")
     public UserDTO getAuthenticatedUser(@AuthenticationPrincipal UserDetails details) {
         UserEntity user = repository.getUserByEmail(details.getUsername());
         return userMapper.mapToDTO(user);
+    }
+
+    @PostMapping("/api/auth/changepass")
+    public PasswordChangedDTO changePassword(@AuthenticationPrincipal UserDetails details,
+                                             @Valid @RequestBody NewPasswordDTO newPassword) {
+        UserEntity user = repository.getUserByEmail(details.getUsername());
+        String password = newPassword.getPassword();
+        new PasswordBreachedChecker().check(password);
+        if (encoder.matches(password, user.getPassword())) {
+            throw new BadRequestException("The passwords must be different!");
+        }
+        user.setPassword(encoder.encode(password));
+        repository.update(user);
+        return new PasswordChangedDTO(user.getEmail());
     }
 }

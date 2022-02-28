@@ -18,10 +18,14 @@ public class RepositoryService {
         return userRepository.existsByEmailIgnoreCase(user.getEmail());
     }
 
-    public UserEntity save(UserEntity user) {
+    public UserEntity create(UserEntity user) {
         if (isUserExist(user)) {
             throw new UserExistsException();
         }
+        return userRepository.save(user);
+    }
+
+    public UserEntity update(UserEntity user) {
         return userRepository.save(user);
     }
 

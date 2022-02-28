@@ -10,7 +10,7 @@ public class UserMapper implements Mapper<UserDTO, UserEntity> {
     public UserEntity mapToEntity(UserDTO dto) {
         return new UserEntity(dto.getName(),
                 dto.getLastname(),
-                dto.getEmail(),
+                dto.getEmail().toLowerCase(),
                 dto.getPassword());
     }
 

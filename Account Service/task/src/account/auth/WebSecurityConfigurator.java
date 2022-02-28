@@ -25,7 +25,7 @@ public class WebSecurityConfigurator extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers("/api/empl/payment").authenticated()
+                .mvcMatchers("/api/empl/payment", "/api/auth/changepass").authenticated()
                 .anyRequest().permitAll() // make remaining endpoints public (including POST /register)
                 .and()
                 .csrf().disable() // disabling CSRF will allow sending POST request using Postman
@@ -39,6 +39,6 @@ public class WebSecurityConfigurator extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder getEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(13);
     }
 }
