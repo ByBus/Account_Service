@@ -1,15 +1,16 @@
-package account;
+package account.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class UserDTO {
+    private long id;
     @NotEmpty
     private String name;
     @NotEmpty
