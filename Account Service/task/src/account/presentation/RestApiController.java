@@ -1,7 +1,6 @@
 package account.presentation;
 
 import account.buiseness.Mapper;
-import account.buiseness.PasswordBreachedChecker;
 import account.exception.BadRequestException;
 import account.model.NewPasswordDTO;
 import account.model.PasswordChangedDTO;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,17 +35,10 @@ public class RestApiController {
     @PostMapping("/api/auth/signup")
     public UserDTO getResponse(@Valid @RequestBody UserDTO userDTO) {
         String password = userDTO.getPassword();
-        new PasswordBreachedChecker().check(password);
         UserEntity userEntity = userMapper.mapToEntity(userDTO);
         userEntity.setPassword(encoder.encode(password));
         userEntity = repository.create(userEntity);
         return userMapper.mapToDTO(userEntity);
-    }
-
-    @GetMapping("/api/empl/payment")
-    public UserDTO getAuthenticatedUser(@AuthenticationPrincipal UserDetails details) {
-        UserEntity user = repository.getUserByEmail(details.getUsername());
-        return userMapper.mapToDTO(user);
     }
 
     @PostMapping("/api/auth/changepass")
@@ -55,7 +46,6 @@ public class RestApiController {
                                              @Valid @RequestBody NewPasswordDTO newPassword) {
         UserEntity user = repository.getUserByEmail(details.getUsername());
         String password = newPassword.getPassword();
-        new PasswordBreachedChecker().check(password);
         if (encoder.matches(password, user.getPassword())) {
             throw new BadRequestException("The passwords must be different!");
         }

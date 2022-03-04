@@ -1,10 +1,10 @@
-package account.buiseness;
+package account.validation;
 
-import account.exception.BadRequestException;
-
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import java.util.List;
 
-public class PasswordBreachedChecker implements Checker<String>{
+public class PasswordInBreachedListValidator implements ConstraintValidator<PasswordNotBreached, String> {
     private final List<String> breachedPasswords = List.of(
             "PasswordForJanuary",
             "PasswordForFebruary",
@@ -20,10 +20,7 @@ public class PasswordBreachedChecker implements Checker<String>{
             "PasswordForDecember");
 
     @Override
-    public boolean check(String password) {
-        if (breachedPasswords.contains(password)) {
-            throw new BadRequestException("The password is in the hacker's database!");
-        }
-        return true;
+    public boolean isValid(String password, ConstraintValidatorContext context) {
+        return password != null && !breachedPasswords.contains(password);
     }
 }

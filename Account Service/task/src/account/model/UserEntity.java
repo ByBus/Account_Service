@@ -2,10 +2,9 @@ package account.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -26,4 +25,7 @@ public class UserEntity {
     private String password;
 
     private String role = "ROLE_USER";
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<SalaryEntity> salary = new ArrayList<>();
 }
