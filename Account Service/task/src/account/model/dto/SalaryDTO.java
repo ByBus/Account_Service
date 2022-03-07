@@ -1,4 +1,4 @@
-package account.model;
+package account.model.dto;
 
 import account.validation.DateValidation;
 import com.fasterxml.jackson.annotation.JsonProperty;

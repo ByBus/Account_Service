@@ -1,12 +1,13 @@
 package account.auth;
 
-import account.model.UserEntity;
+import account.model.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserInfo implements UserDetails {
     private final String email;
@@ -16,7 +17,9 @@ public class UserInfo implements UserDetails {
     public UserInfo(UserEntity user) {
         email = user.getEmail();
         password = user.getPassword();
-        rolesAndAuthorities = List.of(new SimpleGrantedAuthority(user.getRole()));
+        rolesAndAuthorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override

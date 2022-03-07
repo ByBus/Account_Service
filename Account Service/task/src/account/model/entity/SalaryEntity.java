@@ -1,4 +1,4 @@
-package account.model;
+package account.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

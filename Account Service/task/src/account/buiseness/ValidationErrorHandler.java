@@ -1,8 +1,7 @@
 package account.buiseness;
 
 
-import account.model.CustomBadRequestResponseDTO;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import account.model.dto.CustomBadRequestResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
-import java.util.Optional;
 
 @ControllerAdvice
 public class ValidationErrorHandler {
@@ -33,8 +31,6 @@ public class ValidationErrorHandler {
     }
 
     private String getMessages(BindingResult bindingResult) {
-        return Optional.ofNullable(bindingResult.getFieldError())
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .orElse("");
+        return bindingResult.getAllErrors().get(0).getDefaultMessage();
     }
 }

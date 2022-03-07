@@ -1,7 +1,7 @@
 package account.repository;
 
-import account.model.SalaryEntity;
-import account.model.UserEntity;
+import account.model.entity.SalaryEntity;
+import account.model.entity.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

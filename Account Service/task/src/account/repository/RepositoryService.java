@@ -3,8 +3,9 @@ package account.repository;
 import account.exception.BadRequestException;
 import account.exception.DuplicateSalaryException;
 import account.exception.UserExistsException;
-import account.model.SalaryEntity;
-import account.model.UserEntity;
+import account.model.entity.RoleEntity;
+import account.model.entity.SalaryEntity;
+import account.model.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,12 +17,15 @@ import java.util.List;
 public class RepositoryService {
     private final UserRepository userRepository;
     private final SalaryRepository salaryRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
     public RepositoryService(UserRepository userRepository,
-                             SalaryRepository salaryRepository) {
+                             SalaryRepository salaryRepository,
+                             RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.salaryRepository = salaryRepository;
+        this.roleRepository = roleRepository;
     }
 
     public boolean isUserExist(UserEntity user) {
@@ -32,6 +36,7 @@ public class RepositoryService {
         if (isUserExist(user)) {
             throw new UserExistsException();
         }
+        user.addRole(roleRepository.findByName(countUsers() == 0 ? "ADMINISTRATOR" : "USER"));
         return userRepository.save(user);
     }
 
@@ -41,10 +46,6 @@ public class RepositoryService {
 
     public UserEntity getUserByEmail(String email) {
         return userRepository.findByEmailIgnoreCase(email).orElse(null);
-    }
-
-    public void addAll(List<SalaryEntity> salaries) {
-        salaryRepository.saveAll(salaries);
     }
 
     public SalaryEntity update(SalaryEntity salary) {
@@ -64,6 +65,10 @@ public class RepositoryService {
         return salaryRepository.findByUserOrderByPeriodDesc(user);
     }
 
+    public long countUsers() {
+        return userRepository.count();
+    }
+
     @Transactional(rollbackFor = { DuplicateSalaryException.class })
     public void saveAll(List<SalaryEntity> salaries){
         for (var salary : salaries) {
@@ -72,5 +77,17 @@ public class RepositoryService {
             }
             salaryRepository.save(salary);
         }
+    }
+
+    public void deleteUser(UserEntity user) {
+        userRepository.delete(user);
+    }
+
+    public List<UserEntity> allUsers() {
+        return userRepository.findAll();
+    }
+
+    public RoleEntity findRole(String name) {
+        return roleRepository.findByName(name.replace("ROLE_", ""));
     }
 }

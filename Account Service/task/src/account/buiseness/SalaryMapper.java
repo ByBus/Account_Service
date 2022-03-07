@@ -1,8 +1,8 @@
 package account.buiseness;
 
-import account.model.SalaryDTO;
-import account.model.SalaryEntity;
-import account.model.UserEntity;
+import account.model.dto.SalaryDTO;
+import account.model.entity.SalaryEntity;
+import account.model.entity.UserEntity;
 import account.repository.RepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

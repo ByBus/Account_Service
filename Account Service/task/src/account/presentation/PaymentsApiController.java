@@ -3,10 +3,10 @@ package account.presentation;
 
 import account.buiseness.Mapper;
 import account.buiseness.StringFormatter;
-import account.model.SalaryDTO;
-import account.model.SalaryEntity;
-import account.model.StatusDTO;
-import account.model.UserEntity;
+import account.model.dto.SalaryDTO;
+import account.model.entity.SalaryEntity;
+import account.model.dto.StatusDTO;
+import account.model.entity.UserEntity;
 import account.repository.RepositoryService;
 import account.validation.DateValidation;
 import org.springframework.beans.factory.annotation.Autowired;

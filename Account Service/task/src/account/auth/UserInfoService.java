@@ -1,6 +1,6 @@
 package account.auth;
 
-import account.model.UserEntity;
+import account.model.entity.UserEntity;
 import account.repository.RepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

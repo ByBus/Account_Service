@@ -5,7 +5,7 @@ import javax.validation.Payload;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@Constraint(validatedBy = PasswordInBreachedListValidator.class)
+@Constraint(validatedBy = PasswordNotInBreachedListValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordNotBreached {
     String message() default "The password is in the hacker's database!";

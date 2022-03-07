@@ -1,5 +1,6 @@
 package account.auth;
 
+import account.buiseness.CustomAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 @EnableWebSecurity
 public class WebSecurityConfigurator extends WebSecurityConfigurerAdapter {
@@ -25,11 +27,18 @@ public class WebSecurityConfigurator extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .mvcMatchers("/api/empl/payment", "/api/auth/changepass").authenticated()
-                .anyRequest().permitAll() // make remaining endpoints public (including POST /register)
+                .mvcMatchers("/api/auth/changepass").hasAnyRole("ADMINISTRATOR", "ACCOUNTANT", "USER")
+                .mvcMatchers("/api/empl/payment").hasAnyRole("ACCOUNTANT", "USER")
+                .mvcMatchers("/api/acct/payments").hasRole("ACCOUNTANT")
+                .mvcMatchers("/api/admin/**").hasRole("ADMINISTRATOR")
+                .mvcMatchers("/api/auth/signup", "/actuator/shutdown").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
                 .and()
                 .csrf().disable() // disabling CSRF will allow sending POST request using Postman
                 .httpBasic(); // enables basic auth.
+
     }
 
     @Override
@@ -40,5 +49,10 @@ public class WebSecurityConfigurator extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder getEncoder() {
         return new BCryptPasswordEncoder(13);
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new CustomAccessDeniedHandler();
     }
 }

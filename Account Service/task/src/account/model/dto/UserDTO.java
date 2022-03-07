@@ -1,4 +1,4 @@
-package account.model;
+package account.model.dto;
 
 import account.validation.PasswordNotBreached;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,4 +28,6 @@ public class UserDTO {
     @Size(min = 12, message = "Password length must be 12 chars minimum!")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
+    private Set<String> roles;
 }
