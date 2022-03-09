@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,7 +35,7 @@ public class UserMapper implements Mapper<UserDTO, UserEntity> {
     public UserDTO mapToDTO(UserEntity entity) {
         Set<String> roles = entity.getRoles().stream()
                 .map(RoleEntity::getName)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         return new UserDTO(entity.getId(),
                 entity.getName(),
                 entity.getLastname(),

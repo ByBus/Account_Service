@@ -1,14 +1,12 @@
 package account.model.dto;
 
-import account.validation.DateValidation;
+import account.validation.DateValid;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.*;
-import java.util.Objects;
 
 @NoArgsConstructor(force = true)
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class SalaryDTO {
     private final String lastname;
 
     @NotEmpty
-    @DateValidation
+    @DateValid
     private final String period;
 
     @JsonProperty(value = "salary", access = JsonProperty.Access.READ_ONLY)

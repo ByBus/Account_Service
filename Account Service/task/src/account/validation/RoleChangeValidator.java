@@ -20,39 +20,43 @@ public class RoleChangeValidator implements ConstraintValidator<RoleChangeCorrec
     @Override
     public boolean isValid(RoleChangeDTO roleChangeDTO, ConstraintValidatorContext context) {
         UserEntity user = repository.getUserByEmail(roleChangeDTO.getEmail());
+        RoleEntity role;
+        RoleOperation operation;
         if (user == null) {
             throw new UserNotFoundException();
         }
-        String roleName = roleChangeDTO.getRole();
-        RoleEntity newRole = repository.findRole(roleName);
-        if (newRole == null) {
+        try {
+            role = repository.findRole(roleChangeDTO.getRole());
+            role.getName(); //throws NullPointerException
+            operation = RoleOperation.valueOf(roleChangeDTO.getOperation());
+        } catch (NullPointerException e) {
             throw new RoleNotFoundException();
+        } catch (IllegalArgumentException e) {
+            setErrorMessage(context, "Operation must be REMOVE or GRANT!");
+            return false;
         }
-        switch (roleChangeDTO.getOperation()) {
-            case "REMOVE":
-                if (roleName.equals("ADMINISTRATOR")) {
+        switch (operation) {
+            case REMOVE:
+                if (role.isAdmin()) {
                     setErrorMessage(context, "Can't remove ADMINISTRATOR role!");
                     return false;
                 }
-                if (!user.getRoles().contains(newRole)) {
+                if (!user.getRoles().contains(role)) {
                     setErrorMessage(context, "The user does not have a role!");
                     return false;
                 }
-                if (user.getRoles().size() == 1 && user.getRoles().contains(newRole)) {
+                if (user.getRoles().size() == 1 && user.getRoles().contains(role)) {
                     setErrorMessage(context, "The user must have at least one role!");
                     return false;
                 }
                 break;
-            case "GRANT":
+            case GRANT:
                 boolean isUserAdmin = Objects.requireNonNull(user.getRoles().stream().findAny().get()).isAdmin();
-                if (isUserAdmin != newRole.isAdmin()) {
+                if (isUserAdmin != role.isAdmin()) {
                     setErrorMessage(context, "The user cannot combine administrative and business roles!");
                     return false;
                 }
                 break;
-            default:
-                setErrorMessage(context, "Incorrect OPERATION! (REMOVE, GRANT)");
-                return false;
         }
         return true;
     }

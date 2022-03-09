@@ -1,5 +1,6 @@
 package account.model.entity;
 
+import account.auth.Role;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -23,8 +24,8 @@ public class RoleEntity {
     private Set<UserEntity> users = new HashSet<>();
     private boolean isAdmin = false;
 
-    public RoleEntity(String name) {
-        this.name = name.replace(PREFIX, "");
+    public RoleEntity(Role role) {
+        this.name = role.name().replace(PREFIX, "");
     }
 
     public String getName() {

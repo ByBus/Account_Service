@@ -38,6 +38,7 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<SalaryEntity> salary = new ArrayList<>();
+    private int failedLoginAttempts = 0;
 
     public void addRole(RoleEntity role) {
         roles.add(role);

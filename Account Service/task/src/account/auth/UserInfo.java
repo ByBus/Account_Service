@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserInfo implements UserDetails {
+    private static final int MAX_LOGIN_ATTEMPTS = 5;
     private final String email;
     private final String password;
     private final List<GrantedAuthority> rolesAndAuthorities;
+    private final int failedLoginAttempts;
 
     public UserInfo(UserEntity user) {
         email = user.getEmail();
@@ -20,6 +22,7 @@ public class UserInfo implements UserDetails {
         rolesAndAuthorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
+        this.failedLoginAttempts = user.getFailedLoginAttempts();
     }
 
     @Override
@@ -37,7 +40,6 @@ public class UserInfo implements UserDetails {
         return email;
     }
 
-    // 4 remaining methods that just return true
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -45,7 +47,9 @@ public class UserInfo implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals(Role.ADMINISTRATOR.withPrefix()))
+                || failedLoginAttempts < MAX_LOGIN_ATTEMPTS;
     }
 
     @Override

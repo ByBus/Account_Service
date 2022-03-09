@@ -20,7 +20,6 @@ public class UserInfoService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Not found: " + email);
         }
-
         return new UserInfo(user);
     }
 }

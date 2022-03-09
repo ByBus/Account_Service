@@ -1,5 +1,6 @@
 package account;
 
+import account.auth.Role;
 import account.model.entity.BreachedPasswordEntity;
 import account.model.entity.RoleEntity;
 import account.repository.BreachedPasswordRepository;
@@ -9,12 +10,13 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Component
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
     private boolean isDBInitialized = false;
-    private final List<String> breachedPasswords = List.of(
+    private static final List<String> BREACHED_PASSWORDS = List.of(
             "PasswordForJanuary",
             "PasswordForFebruary",
             "PasswordForMarch",
@@ -28,7 +30,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             "PasswordForNovember",
             "PasswordForDecember");
 
-    private final List<String> roles = List.of("ADMINISTRATOR", "ACCOUNTANT", "USER");
+    private static final List<Role> ROLES = Arrays.asList(Role.values());
 
     @Autowired
     private RoleRepository roleRepository;
@@ -38,8 +40,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (!isDBInitialized) {
-            roles.forEach(this::createRole);
-            breachedPasswords.forEach(this::createBreachedPassword);
+            ROLES.forEach(this::createRole);
+            BREACHED_PASSWORDS.forEach(this::createBreachedPassword);
             isDBInitialized = true;
         }
     }
@@ -52,11 +54,11 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
     }
 
-    private void createRole(String name) {
-        RoleEntity role = roleRepository.findByName(name);
+    private void createRole(Role roleType) {
+        RoleEntity role = roleRepository.findByName(roleType.name());
         if (role == null) {
-            role = new RoleEntity(name);
-            role.setAdmin(name.equals("ADMINISTRATOR"));
+            role = new RoleEntity(roleType);
+            role.setAdmin(roleType.equals(Role.ADMINISTRATOR));
             roleRepository.save(role);
         }
     }

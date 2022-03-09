@@ -8,7 +8,7 @@ import account.model.entity.SalaryEntity;
 import account.model.dto.StatusDTO;
 import account.model.entity.UserEntity;
 import account.repository.RepositoryService;
-import account.validation.DateValidation;
+import account.validation.DateValid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +41,7 @@ public class PaymentsApiController {
 
     @GetMapping("/api/empl/payment")
     public ResponseEntity<?> getSalaryForPeriod(@AuthenticationPrincipal UserDetails details,
-                                                @RequestParam(required = false) @DateValidation String period) {
+                                                @RequestParam(required = false) @DateValid String period) {
         UserEntity user = repository.getUserByEmail(details.getUsername());
         if (period == null) {
             List<SalaryEntity> salaries = repository.getSalariesSorted(user);

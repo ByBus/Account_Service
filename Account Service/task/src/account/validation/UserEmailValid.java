@@ -5,9 +5,9 @@ import javax.validation.Payload;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@Constraint(validatedBy = DateValidator.class)
+@Constraint(validatedBy = UserEmailValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DateValidation {
+public @interface UserEmailValid {
     String message() default "Date must be in MM-YYYY format";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
